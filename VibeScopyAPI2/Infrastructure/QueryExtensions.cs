@@ -10,10 +10,10 @@ namespace VibeScopyAPI.Infrastructure
 		{
 			foreach(var answersFilament in answersFilaments)
 			{
-                /*profilePropositions = profilePropositions.Where(profile =>
+                profilePropositions = profilePropositions.Where(profile =>
 					EF.Functions.FuzzyStringMatchLevenshteinLessEqual(
 						profile.AnswersFilaments.First(
-							x => x.FilamentName == answersFilament.FilamentName).FilamentValue, answersFilament.FilamentValue, 5) < 5);*/
+							x => x.QuestionFilamentId == answersFilament.QuestionFilamentId).FilamentValue, answersFilament.FilamentValue, 5) < 5);
             }
 			return profilePropositions;
         }

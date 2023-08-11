@@ -4,12 +4,44 @@ using NetTopologySuite.Geometries;
 
 #nullable disable
 
-namespace VibeScopyAPI2.Migrations
+namespace VibeScopyAPI.Migrations
 {
-    public partial class initial : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:postgis", ",,");
+
+            migrationBuilder.CreateTable(
+                name: "Activities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ActivityType = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Activities", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProfilePropositions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Location = table.Column<Point>(type: "geography (point)", nullable: false),
+                    IsVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    Height = table.Column<int>(type: "integer", nullable: false),
+                    Hobbies = table.Column<string>(type: "text", nullable: false),
+                    BirthDay = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfilePropositions", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Profiles",
                 columns: table => new
@@ -18,16 +50,12 @@ namespace VibeScopyAPI2.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Phone = table.Column<string>(type: "text", nullable: false),
-                    ProfileId = table.Column<Guid>(type: "uuid", nullable: true)
+                    SubscriptionType = table.Column<int>(type: "integer", nullable: false),
+                    Langages = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Profiles", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Profiles_Profiles_ProfileId",
-                        column: x => x.ProfileId,
-                        principalTable: "Profiles",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -39,6 +67,18 @@ namespace VibeScopyAPI2.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Question", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "QuestionFilament",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuestionFilament", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -60,47 +100,68 @@ namespace VibeScopyAPI2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProfilePropositions",
+                name: "SwipedUser",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Location = table.Column<Point>(type: "geometry", nullable: false)
+                    ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SwipeStatus = table.Column<int>(type: "integer", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfilePropositions", x => x.Id);
+                    table.PrimaryKey("PK_SwipedUser", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProfilePropositions_Profiles_UserId",
-                        column: x => x.UserId,
+                        name: "FK_SwipedUser_Profiles_ProfileId",
+                        column: x => x.ProfileId,
                         principalTable: "Profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AnswersFilament",
+                name: "AnswersFilaments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FilamentName = table.Column<string>(type: "text", nullable: false),
+                    ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    QuestionFilamentId = table.Column<Guid>(type: "uuid", nullable: false),
                     FilamentValue = table.Column<string>(type: "text", nullable: false),
                     LastUpdate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ProfileId = table.Column<Guid>(type: "uuid", nullable: true),
                     ProfilePropositionId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AnswersFilament", x => x.Id);
+                    table.PrimaryKey("PK_AnswersFilaments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AnswersFilament_ProfilePropositions_ProfilePropositionId",
+                        name: "FK_AnswersFilaments_ProfilePropositions_ProfilePropositionId",
                         column: x => x.ProfilePropositionId,
                         principalTable: "ProfilePropositions",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AnswersFilament_Profiles_ProfileId",
-                        column: x => x.ProfileId,
-                        principalTable: "Profiles",
+                        name: "FK_AnswersFilaments_QuestionFilament_QuestionFilamentId",
+                        column: x => x.QuestionFilamentId,
+                        principalTable: "QuestionFilament",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PossibleAnswer",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Value = table.Column<short>(type: "smallint", nullable: false),
+                    Text = table.Column<string>(type: "text", nullable: false),
+                    QuestionFilamentId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PossibleAnswer", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PossibleAnswer_QuestionFilament_QuestionFilamentId",
+                        column: x => x.QuestionFilamentId,
+                        principalTable: "QuestionFilament",
                         principalColumn: "Id");
                 });
 
@@ -117,9 +178,9 @@ namespace VibeScopyAPI2.Migrations
                 {
                     table.PrimaryKey("PK_Answer", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Answer_AnswersFilament_AnswersFilamentId",
+                        name: "FK_Answer_AnswersFilaments_AnswersFilamentId",
                         column: x => x.AnswersFilamentId,
-                        principalTable: "AnswersFilament",
+                        principalTable: "AnswersFilaments",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Answer_Question_QuestionId",
@@ -140,14 +201,14 @@ namespace VibeScopyAPI2.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AnswersFilament_ProfileId",
-                table: "AnswersFilament",
-                column: "ProfileId");
+                name: "IX_AnswersFilaments_ProfilePropositionId",
+                table: "AnswersFilaments",
+                column: "ProfilePropositionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AnswersFilament_ProfilePropositionId",
-                table: "AnswersFilament",
-                column: "ProfilePropositionId");
+                name: "IX_AnswersFilaments_QuestionFilamentId",
+                table: "AnswersFilaments",
+                column: "QuestionFilamentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Photo_ProfileId",
@@ -155,18 +216,21 @@ namespace VibeScopyAPI2.Migrations
                 column: "ProfileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProfilePropositions_UserId",
-                table: "ProfilePropositions",
-                column: "UserId");
+                name: "IX_PossibleAnswer_QuestionFilamentId",
+                table: "PossibleAnswer",
+                column: "QuestionFilamentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Profiles_ProfileId",
-                table: "Profiles",
+                name: "IX_SwipedUser_ProfileId",
+                table: "SwipedUser",
                 column: "ProfileId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Activities");
+
             migrationBuilder.DropTable(
                 name: "Answer");
 
@@ -174,16 +238,25 @@ namespace VibeScopyAPI2.Migrations
                 name: "Photo");
 
             migrationBuilder.DropTable(
-                name: "AnswersFilament");
+                name: "PossibleAnswer");
+
+            migrationBuilder.DropTable(
+                name: "SwipedUser");
+
+            migrationBuilder.DropTable(
+                name: "AnswersFilaments");
 
             migrationBuilder.DropTable(
                 name: "Question");
 
             migrationBuilder.DropTable(
+                name: "Profiles");
+
+            migrationBuilder.DropTable(
                 name: "ProfilePropositions");
 
             migrationBuilder.DropTable(
-                name: "Profiles");
+                name: "QuestionFilament");
         }
     }
 }

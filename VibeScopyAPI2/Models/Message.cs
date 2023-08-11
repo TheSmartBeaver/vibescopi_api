@@ -6,9 +6,9 @@
 
         public DateTime Date { get; set; }
 
-        public Profile Sender { get; set; }
+        public UserProfile Sender { get; set; }
 
-        public Profile Receiver { get; set; }
+        public UserProfile Receiver { get; set; }
 
         public string Value { get; set; }
     }

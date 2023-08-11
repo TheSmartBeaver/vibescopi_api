@@ -6,11 +6,11 @@
 
         public MatchModeType MatchModeType { get; set; }
 
-        public Profile User { get; set; }
+        public UserProfile User { get; set; }
 
-        public ICollection<Profile> UsersLiking { get; set; }
+        public ICollection<UserProfile> UsersLiking { get; set; }
 
-        public ICollection<Profile> UsersLiked { get; set; }
+        public ICollection<UserProfile> UsersLiked { get; set; }
     }
 }
 
