@@ -8,13 +8,18 @@ namespace VibeScopyAPI.Models
     {
         public Guid Id { get; set; }
 
+        [Required]
+        public string AuthentUid { get; set; }
+
+        [Required]
         public string Name { get; set; }
 
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 
         [Phone]
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
         public ICollection<Photo> Photos { get; set; }
 
@@ -22,7 +27,7 @@ namespace VibeScopyAPI.Models
 
         public SubscriptionType SubscriptionType { get; set; }
 
-        public string Langages { get; set; }
+        public string? Langages { get; set; } = default!;
 
         public ProfileProposition ProfileProposition { get; set; }
     }

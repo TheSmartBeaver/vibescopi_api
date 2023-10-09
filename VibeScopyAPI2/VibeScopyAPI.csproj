@@ -32,6 +32,7 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Collection" Version="9.0.0" />
+    <PackageReference Include="FirebaseAdmin" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +42,7 @@
     <None Remove="AppServices\" />
     <None Remove="Converters\" />
     <None Remove="Migrations\" />
+    <None Remove="Hubs\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Infrastructure\" />
@@ -49,10 +51,16 @@
     <Folder Include="AppServices\" />
     <Folder Include="Converters\" />
     <Folder Include="Migrations\" />
+    <Folder Include="Hubs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Condition="'$(ExcludeConfigFilesFromBuildOutput)'!='true'" Update="Properties\launchSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Properties\googleServiceAccountKey.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
 </Project>

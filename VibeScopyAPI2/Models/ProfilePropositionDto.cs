@@ -1,22 +1,13 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using NetTopologySuite.Geometries;
 using VibeScopyAPI2.Models;
 using VibeScopyAPI2.Models.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace VibeScopyAPI.Models
 {
-    public class ProfileProposition
-    {
-        [ForeignKey(nameof(User))]
-        public Guid Id { get; set; }
-
-        public UserProfile User { get; set; }
-
-        [Column(TypeName = "geography (point)")]
-        public Point? LastLocation { get; set; }
+    public class ProfilePropositionDto
+	{
 
         public ICollection<AnswersFilament> AnswersFilaments { get; set; }
 

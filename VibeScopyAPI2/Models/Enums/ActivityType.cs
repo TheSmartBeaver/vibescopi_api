@@ -7,7 +7,8 @@
 		FRESH_AIR_ACTIVITY = 3,
 		TOURNAMENT = 4,
 		EVENT = 5,
-		GASTRONOMY = 6
+		GASTRONOMY = 6,
+		ONLINE = 7
 	}
 }
 

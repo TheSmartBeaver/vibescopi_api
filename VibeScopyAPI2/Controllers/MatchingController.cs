@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -8,7 +7,6 @@ using VibeScopyAPI.Dto;
 using VibeScopyAPI.Infrastructure;
 using VibeScopyAPI.Models;
 using VibeScopyAPI2.Dto;
-using VibeScopyAPI2.Models.Enums;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,37 +14,39 @@ namespace VibeScopyAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MatchingController : ControllerBase
+    public class MatchingController : BaseController
     {
         private readonly VibeScopUnitOfWork _context;
         private readonly IMapper _mapper;
 
-        public MatchingController(VibeScopUnitOfWork context)
+        public MatchingController(VibeScopUnitOfWork context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         //Trouver les matchs potentiels
         [HttpPost("getPotentialMatches")]
-        public async Task<PotentialMatchDto> getPotentialMatches(PotentialMatcheCriteriasDto potentialMatcheCriterias)
+        public async Task<ActionResult<ICollection<PotentialMatchDto>>> getPotentialMatches(PotentialMatcheCriteriasDto potentialMatcheCriterias)
         {
-            //Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            Guid userId = Guid.Parse("4ca0892b-1ecc-4707-bd5c-d964a01aaa1a");
+            var fbUid = await GetAuthenticateUserAsync();
 
             //ProfileProposition profile = await _context.ProfilePropositions.SingleAsync(x => x.Id == userId);
             ProfileProposition profile = await _context.ProfilePropositions
                 .Include(x => x.AnswersFilaments)
-                .SingleAsync(x => x.Id == userId);
+                .Include(x => x.User)
+                .SingleAsync(x => x.User.AuthentUid == fbUid);
 
             var distanceInDegrees = potentialMatcheCriterias.Distance / 111.32; // Approximate conversion from km to degrees
             var userLocation = new Point(new Coordinate(profile.LastLocation.X, profile.LastLocation.Y)) { SRID = 4326 };
-            var nearbyUsers = _context.ProfilePropositions
+            List<ProfileProposition> nearbyUsers = _context.ProfilePropositions
                 .Where(profile => profile.LastLocation.IsWithinDistance(userLocation, distanceInDegrees))
+                .Include(x => x.User)
                 .AddFilaments(profile.AnswersFilaments)
-                //.Include(x => x.User)
                 .ToList();
 
-            return new PotentialMatchDto();
+            ICollection<PotentialMatchDto> result = _mapper.Map<ICollection<PotentialMatchDto>>(nearbyUsers);
+            return Ok(result);
         }
 
         [HttpPost("answerFilamentQuestions/{answersFilamentId}")]

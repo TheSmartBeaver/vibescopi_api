@@ -20,7 +20,17 @@ namespace VibeScopyAPI2.Converters
 
             CreateMap<Activity, ActityDto>();
             CreateMap<ActivityCreateDto, Activity>();
-            CreateMap<CreateUserDto, VibeScopyAPI.Models.UserProfile>();
+            CreateMap<CreateUserDto, UserProfile>();
+            CreateMap<CreateUserDto, UserPreferences>();
+            CreateMap<CreateUserDto, ProfileProposition>()
+                .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(x => x.BirthDay.ToUniversalTime()));
+
+            CreateMap<UserProfile, ProfileDto>();
+            CreateMap<ProfileProposition, ProfilePropositionDto>();
+            CreateMap<ProfileProposition, PotentialMatchDto>()
+                .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(x => x.BirthDay.ToUniversalTime()))
+                .ForMember(dest => dest.AuthentUid, opt => opt.MapFrom(x => x.User.AuthentUid))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(x => x.User.Name));
         }
     }
 }

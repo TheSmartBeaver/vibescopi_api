@@ -37,6 +37,8 @@ builder.Services.AddDbContext<VibeScopUnitOfWork>(options =>
     )
 );
 
+builder.Services.AddSignalR();
+
 #region Sécurité
 
 var test3 = builder.Configuration["Token"];
@@ -80,5 +82,12 @@ app.UseAuthorization();
 app.UseAuthentication();
 
 app.MapControllers();
+
+app.UseRouting();
+//SignalR
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ChatHub>("/chatHub");
+});
 
 app.Run();

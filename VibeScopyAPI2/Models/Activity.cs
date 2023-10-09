@@ -9,8 +9,6 @@ namespace VibeScopyAPI.Models
         public string Name { get; set; }
 
         public ActivityCategory ActivityCategory { get; set; }
-
-        public ActivitySubCategory ActivitySubCategory { get; set; }
     }
 }
 

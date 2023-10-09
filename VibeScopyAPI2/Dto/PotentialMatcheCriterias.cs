@@ -6,7 +6,7 @@ namespace VibeScopyAPI.Dto
 	{
 		public int Distance { get; set; }
 
-        public ICollection<FilamentDto> Filaments { get; set; }
+        public ICollection<FilamentDto>? Filaments { get; set; }
 
         public int AgeMin { get; set; }
 

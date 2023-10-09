@@ -1,12 +1,10 @@
 ﻿namespace VibeScopyAPI.Dto
 {
-	public class AuthentificateDto
+	public class AuthentificateEntryDto
 	{
-		public string Email { get; set; }
+		public string? AuthentUid { get; set; }
 
-        public string PhoneNumber { get; set; }
-
-        public string CryptedPassword { get; set; }
+        public string? IdToken { get; set; }
     }
 }
 
