@@ -6,7 +6,7 @@ namespace VibeScopyAPI.Models
 	public class UserPreferences
 	{
         [Key]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         public ICollection<Gender> LovingGenders { get; set; }
 

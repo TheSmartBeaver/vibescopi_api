@@ -1,10 +1,4 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using FirebaseAdmin.Auth;
-using Microsoft.IdentityModel.Tokens;
+﻿using System.Security.Claims;
 using VibeScopyAPI2.Dto;
 using VibeScopyAPI2.Models.Enums;
 

@@ -13,7 +13,7 @@ using VibeScopyAPI.Infrastructure;
 namespace VibeScopyAPI.Migrations
 {
     [DbContext(typeof(VibeScopUnitOfWork))]
-    [Migration("20230815093910_InitialCreate")]
+    [Migration("20231019081132_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,9 +33,6 @@ namespace VibeScopyAPI.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<int>("ActivityCategory")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ActivitySubCategory")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -84,11 +81,12 @@ namespace VibeScopyAPI.Migrations
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ProfileId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ProfileId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<Guid?>("ProfilePropositionId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ProfilePropositionId")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("QuestionFilamentId")
                         .HasColumnType("uuid");
@@ -112,20 +110,21 @@ namespace VibeScopyAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("UserProfileId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ProfileId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserProfileId");
+                    b.HasIndex("ProfileId");
 
-                    b.ToTable("Photo");
+                    b.ToTable("Photos");
                 });
 
             modelBuilder.Entity("VibeScopyAPI.Models.ProfileProposition", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("BirthDay")
                         .HasColumnType("timestamp with time zone");
@@ -158,11 +157,28 @@ namespace VibeScopyAPI.Migrations
                     b.ToTable("Question");
                 });
 
+            modelBuilder.Entity("VibeScopyAPI.Models.UserLikeProfile", b =>
+                {
+                    b.Property<string>("UserProfileId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LikedPersonId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RateAction")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserProfileId", "LikedPersonId");
+
+                    b.HasIndex("LikedPersonId");
+
+                    b.ToTable("UserLikeProfiles");
+                });
+
             modelBuilder.Entity("VibeScopyAPI.Models.UserPreferences", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("FriendGenders")
                         .IsRequired()
@@ -183,12 +199,7 @@ namespace VibeScopyAPI.Migrations
 
             modelBuilder.Entity("VibeScopyAPI.Models.UserProfile", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
                     b.Property<string>("AuthentUid")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -208,7 +219,7 @@ namespace VibeScopyAPI.Migrations
                     b.Property<int>("SubscriptionType")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("AuthentUid");
 
                     b.HasIndex("AuthentUid")
                         .IsUnique();
@@ -266,15 +277,15 @@ namespace VibeScopyAPI.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ProfileId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ProfileAuthentUid")
+                        .HasColumnType("text");
 
                     b.Property<int>("SwipeStatus")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProfileId");
+                    b.HasIndex("ProfileAuthentUid");
 
                     b.ToTable("SwipedUser");
                 });
@@ -311,9 +322,13 @@ namespace VibeScopyAPI.Migrations
 
             modelBuilder.Entity("VibeScopyAPI.Models.Photo", b =>
                 {
-                    b.HasOne("VibeScopyAPI.Models.UserProfile", null)
+                    b.HasOne("VibeScopyAPI.Models.UserProfile", "UserProfile")
                         .WithMany("Photos")
-                        .HasForeignKey("UserProfileId");
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("VibeScopyAPI.Models.ProfileProposition", b =>
@@ -327,6 +342,25 @@ namespace VibeScopyAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("VibeScopyAPI.Models.UserLikeProfile", b =>
+                {
+                    b.HasOne("VibeScopyAPI.Models.UserProfile", "LikedPerson")
+                        .WithMany()
+                        .HasForeignKey("LikedPersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VibeScopyAPI.Models.UserProfile", "UserProfile")
+                        .WithMany("UsersLiked")
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LikedPerson");
+
+                    b.Navigation("UserProfile");
+                });
+
             modelBuilder.Entity("VibeScopyAPI2.Models.PossibleAnswer", b =>
                 {
                     b.HasOne("VibeScopyAPI2.Models.QuestionFilament", null)
@@ -338,9 +372,7 @@ namespace VibeScopyAPI.Migrations
                 {
                     b.HasOne("VibeScopyAPI.Models.UserProfile", "Profile")
                         .WithMany("SwipedProfiles")
-                        .HasForeignKey("ProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProfileAuthentUid");
 
                     b.Navigation("Profile");
                 });
@@ -363,6 +395,8 @@ namespace VibeScopyAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("SwipedProfiles");
+
+                    b.Navigation("UsersLiked");
                 });
 
             modelBuilder.Entity("VibeScopyAPI2.Models.QuestionFilament", b =>

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using VibeScopyAPI.Dto;
 using VibeScopyAPI2.Models;
 using VibeScopyAPI2.Models.Enums;
 
@@ -6,9 +7,8 @@ namespace VibeScopyAPI.Models
 {
     public class UserProfile
     {
-        public Guid Id { get; set; }
-
         [Required]
+        [Key]
         public string AuthentUid { get; set; }
 
         [Required]
@@ -30,6 +30,8 @@ namespace VibeScopyAPI.Models
         public string? Langages { get; set; } = default!;
 
         public ProfileProposition ProfileProposition { get; set; }
+
+        public ICollection<UserLikeProfile> UsersLiked { get; set; }
     }
 }
 

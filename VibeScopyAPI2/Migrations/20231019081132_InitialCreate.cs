@@ -19,8 +19,7 @@ namespace VibeScopyAPI.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    ActivityCategory = table.Column<int>(type: "integer", nullable: false),
-                    ActivitySubCategory = table.Column<int>(type: "integer", nullable: false)
+                    ActivityCategory = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -31,7 +30,6 @@ namespace VibeScopyAPI.Migrations
                 name: "Profiles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AuthentUid = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
@@ -41,7 +39,7 @@ namespace VibeScopyAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Profiles", x => x.Id);
+                    table.PrimaryKey("PK_Profiles", x => x.AuthentUid);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,7 +69,7 @@ namespace VibeScopyAPI.Migrations
                 name: "UserPreferences",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     LovingGenders = table.Column<string>(type: "text", nullable: false),
                     FriendGenders = table.Column<string>(type: "text", nullable: false),
                     LookingRelationShips = table.Column<string>(type: "text", nullable: false)
@@ -82,28 +80,29 @@ namespace VibeScopyAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Photo",
+                name: "Photos",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AWSPathS3 = table.Column<string>(type: "text", nullable: false),
-                    UserProfileId = table.Column<Guid>(type: "uuid", nullable: true)
+                    ProfileId = table.Column<string>(type: "text", nullable: false),
+                    AWSPathS3 = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Photo", x => x.Id);
+                    table.PrimaryKey("PK_Photos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Photo_Profiles_UserProfileId",
-                        column: x => x.UserProfileId,
+                        name: "FK_Photos_Profiles_ProfileId",
+                        column: x => x.ProfileId,
                         principalTable: "Profiles",
-                        principalColumn: "Id");
+                        principalColumn: "AuthentUid",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "ProfilePropositions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     LastLocation = table.Column<Point>(type: "geography (point)", nullable: true),
                     IsVerified = table.Column<bool>(type: "boolean", nullable: false),
                     Height = table.Column<int>(type: "integer", nullable: false),
@@ -117,7 +116,7 @@ namespace VibeScopyAPI.Migrations
                         name: "FK_ProfilePropositions_Profiles_Id",
                         column: x => x.Id,
                         principalTable: "Profiles",
-                        principalColumn: "Id",
+                        principalColumn: "AuthentUid",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -126,7 +125,7 @@ namespace VibeScopyAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProfileAuthentUid = table.Column<string>(type: "text", nullable: true),
                     SwipeStatus = table.Column<int>(type: "integer", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -134,10 +133,34 @@ namespace VibeScopyAPI.Migrations
                 {
                     table.PrimaryKey("PK_SwipedUser", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SwipedUser_Profiles_ProfileId",
-                        column: x => x.ProfileId,
+                        name: "FK_SwipedUser_Profiles_ProfileAuthentUid",
+                        column: x => x.ProfileAuthentUid,
                         principalTable: "Profiles",
-                        principalColumn: "Id",
+                        principalColumn: "AuthentUid");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserLikeProfiles",
+                columns: table => new
+                {
+                    UserProfileId = table.Column<string>(type: "text", nullable: false),
+                    LikedPersonId = table.Column<string>(type: "text", nullable: false),
+                    RateAction = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserLikeProfiles", x => new { x.UserProfileId, x.LikedPersonId });
+                    table.ForeignKey(
+                        name: "FK_UserLikeProfiles_Profiles_LikedPersonId",
+                        column: x => x.LikedPersonId,
+                        principalTable: "Profiles",
+                        principalColumn: "AuthentUid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserLikeProfiles_Profiles_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "AuthentUid",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -165,11 +188,11 @@ namespace VibeScopyAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProfileId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProfileId = table.Column<string>(type: "text", nullable: false),
                     QuestionFilamentId = table.Column<Guid>(type: "uuid", nullable: false),
                     FilamentValue = table.Column<string>(type: "text", nullable: false),
                     LastUpdate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ProfilePropositionId = table.Column<Guid>(type: "uuid", nullable: true)
+                    ProfilePropositionId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -233,9 +256,9 @@ namespace VibeScopyAPI.Migrations
                 column: "QuestionFilamentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Photo_UserProfileId",
-                table: "Photo",
-                column: "UserProfileId");
+                name: "IX_Photos_ProfileId",
+                table: "Photos",
+                column: "ProfileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PossibleAnswer_QuestionFilamentId",
@@ -255,9 +278,14 @@ namespace VibeScopyAPI.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_SwipedUser_ProfileId",
+                name: "IX_SwipedUser_ProfileAuthentUid",
                 table: "SwipedUser",
-                column: "ProfileId");
+                column: "ProfileAuthentUid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLikeProfiles_LikedPersonId",
+                table: "UserLikeProfiles",
+                column: "LikedPersonId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -269,13 +297,16 @@ namespace VibeScopyAPI.Migrations
                 name: "Answer");
 
             migrationBuilder.DropTable(
-                name: "Photo");
+                name: "Photos");
 
             migrationBuilder.DropTable(
                 name: "PossibleAnswer");
 
             migrationBuilder.DropTable(
                 name: "SwipedUser");
+
+            migrationBuilder.DropTable(
+                name: "UserLikeProfiles");
 
             migrationBuilder.DropTable(
                 name: "UserPreferences");

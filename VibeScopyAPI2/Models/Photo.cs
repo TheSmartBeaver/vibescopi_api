@@ -7,7 +7,7 @@ namespace VibeScopyAPI.Models
         public Guid Id { get; set; }
 
         [ForeignKey(nameof(UserProfile))]
-        public Guid ProfileId { get; set; }
+        public string ProfileId { get; set; }
 
         public UserProfile UserProfile { get; set; }
 

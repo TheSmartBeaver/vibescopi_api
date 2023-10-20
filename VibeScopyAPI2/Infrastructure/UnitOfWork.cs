@@ -25,6 +25,8 @@ namespace VibeScopyAPI.Infrastructure
 
         public DbSet<Photo> Photos { get; set; } = default!;
 
+        public DbSet<UserLikeProfile> UserLikeProfiles { get; set; } = default!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -45,6 +47,25 @@ namespace VibeScopyAPI.Infrastructure
                 .HasMany(e => e.Photos)
                 .WithOne(e => e.UserProfile)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserLikeProfile>()
+            .HasKey(ul => new { ul.UserProfileId, ul.LikedPersonId });
+
+            modelBuilder.Entity<UserLikeProfile>()
+            .HasOne(ul => ul.UserProfile)        // Une clé étrangère vers UserProfile
+            .WithMany()
+            .HasForeignKey(ul => ul.UserProfileId);
+
+            modelBuilder.Entity<UserLikeProfile>()
+                .HasOne(ul => ul.LikedPerson)        // Une clé étrangère vers UserProfile
+                .WithMany()
+                .HasForeignKey(ul => ul.LikedPersonId);
+
+            modelBuilder.Entity<UserProfile>()
+                .HasMany(ul => ul.UsersLiked)        // Une clé étrangère vers UserProfile
+                .WithOne(ul => ul.UserProfile)
+                .HasForeignKey(ul => ul.UserProfileId);
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

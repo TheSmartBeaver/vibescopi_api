@@ -11,7 +11,7 @@ namespace VibeScopyAPI.Models
     public class ProfileProposition
     {
         [ForeignKey(nameof(User))]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         public UserProfile User { get; set; }
 

@@ -11,7 +11,7 @@ namespace VibeScopyAPI.Dto
         [Required]
         public string Name { get; set; }
 
-		public decimal Distance { get; set; }
+		public double? Distance { get; set; }
 
 		public string Bio { get; set; }
 

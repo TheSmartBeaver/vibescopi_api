@@ -8,6 +8,8 @@ namespace VibeScopyAPI.Controllers
 	{
         public string AuthentUid { get; set; }
 
+        public string FcbUid { get; set; }
+
         public string Name { get; set; }
 
         [EmailAddress]

@@ -7,7 +7,7 @@ namespace VibeScopyAPI.Models
 	{
         public Guid Id { get; set; }
 
-        public Guid ProfileId { get; set; }
+        public string ProfileId { get; set; }
 
         public Guid QuestionFilamentId { get; set; }
 

@@ -57,7 +57,7 @@ namespace VibeScopyAPI.Controllers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
+                //new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
                 new Claim(ClaimTypes.Name, userFromRepo.Name)
             };
 
@@ -136,12 +136,12 @@ namespace VibeScopyAPI.Controllers
                 await _context.SaveChangesAsync();
 
                 var profileProposition = _mapper.Map<ProfileProposition>(createUserDto);
-                profileProposition.Id = user.Id;
+                profileProposition.Id = user.AuthentUid;
                 _context.ProfilePropositions.Add(profileProposition);
                 await _context.SaveChangesAsync();
 
                 var userPreferences = _mapper.Map<UserPreferences>(createUserDto);
-                userPreferences.Id = user.Id;
+                userPreferences.Id = user.AuthentUid;
                 _context.UserPreferences.Add(userPreferences);
                 await _context.SaveChangesAsync();
 
@@ -165,7 +165,7 @@ namespace VibeScopyAPI.Controllers
             var user = await _context.Profiles.SingleAsync(x => x.AuthentUid == updateUserDto.FbId);
             foreach(var photoPath in updateUserDto.AWSS3Path)
             {
-                Photo photo = new Photo() { ProfileId = user.Id, AWSPathS3 = photoPath };
+                Photo photo = new Photo() { ProfileId = user.AuthentUid, AWSPathS3 = photoPath };
                 _context.Photos.Add(photo);
             }
 
@@ -180,7 +180,11 @@ namespace VibeScopyAPI.Controllers
             var fbUid = await GetAuthenticateUserAsync();
 
             ProfileProposition user = await _context.ProfilePropositions.Include(x => x.User).SingleAsync(x => x.User.AuthentUid == fbUid);
-            user.LastLocation = new Point(new Coordinate(updateUserDto.Latitude, updateUserDto.Longitude));
+            //user.LastLocation = new Point(new Coordinate(updateUserDto.Latitude, updateUserDto.Longitude)) { SRID = 4326 };
+
+            var geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var currentLocation = geometryFactory.CreatePoint(new NetTopologySuite.Geometries.Coordinate(updateUserDto.Longitude, updateUserDto.Latitude));
+            user.LastLocation = currentLocation;
 
             await _context.SaveChangesAsync();
 

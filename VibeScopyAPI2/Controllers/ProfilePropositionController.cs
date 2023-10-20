@@ -53,37 +53,6 @@ namespace VibeScopyAPI2.Controllers
             return profileProposition;
         }
 
-        // PUT: api/ProfileProposition/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProfileProposition(Guid id, ProfileProposition profileProposition)
-        {
-            if (id != profileProposition.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(profileProposition).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProfilePropositionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
         // POST: api/ProfileProposition
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -126,9 +95,9 @@ namespace VibeScopyAPI2.Controllers
             return NoContent();
         }
 
-        private bool ProfilePropositionExists(Guid id)
-        {
-            return (_context.ProfilePropositions?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        //private bool ProfilePropositionExists(Guid id)
+        //{
+        //    return (_context.ProfilePropositions?.Any(e => e.Id == id)).GetValueOrDefault();
+        //}
     }
 }
