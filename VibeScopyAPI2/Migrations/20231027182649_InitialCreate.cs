@@ -17,13 +17,17 @@ namespace VibeScopyAPI.Migrations
                 name: "Activities",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    ActivityCategory = table.Column<int>(type: "integer", nullable: false)
+                    ActivityCategory = table.Column<int>(type: "integer", nullable: false),
+                    ActivityCategory1 = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Activities", x => x.Id);
+                    table.PrimaryKey("PK_Activities", x => x.ActivityCategory);
+                    table.ForeignKey(
+                        name: "FK_Activities_Activities_ActivityCategory1",
+                        column: x => x.ActivityCategory1,
+                        principalTable: "Activities",
+                        principalColumn: "ActivityCategory");
                 });
 
             migrationBuilder.CreateTable(
@@ -77,6 +81,35 @@ namespace VibeScopyAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserPreferences", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LaunchedActivities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ActivityCategory = table.Column<int>(type: "integer", nullable: false),
+                    CreatorAuthentUid = table.Column<string>(type: "text", nullable: false),
+                    MaxParticipants = table.Column<short>(type: "smallint", nullable: true),
+                    MinParticipants = table.Column<short>(type: "smallint", nullable: true),
+                    AccessConditions = table.Column<string>(type: "text", nullable: false),
+                    MinAge = table.Column<short>(type: "smallint", nullable: true),
+                    MaxAge = table.Column<short>(type: "smallint", nullable: true),
+                    Gender = table.Column<string>(type: "text", nullable: true),
+                    Localisation = table.Column<Point>(type: "geometry", nullable: true),
+                    LevelRequired = table.Column<int>(type: "integer", nullable: true),
+                    EventDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LaunchedActivities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LaunchedActivities_Profiles_CreatorAuthentUid",
+                        column: x => x.CreatorAuthentUid,
+                        principalTable: "Profiles",
+                        principalColumn: "AuthentUid",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -236,6 +269,11 @@ namespace VibeScopyAPI.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Activities_ActivityCategory1",
+                table: "Activities",
+                column: "ActivityCategory1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Answer_AnswersFilamentId",
                 table: "Answer",
                 column: "AnswersFilamentId");
@@ -254,6 +292,12 @@ namespace VibeScopyAPI.Migrations
                 name: "IX_AnswersFilaments_QuestionFilamentId",
                 table: "AnswersFilaments",
                 column: "QuestionFilamentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LaunchedActivities_CreatorAuthentUid",
+                table: "LaunchedActivities",
+                column: "CreatorAuthentUid",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Photos_ProfileId",
@@ -295,6 +339,9 @@ namespace VibeScopyAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "Answer");
+
+            migrationBuilder.DropTable(
+                name: "LaunchedActivities");
 
             migrationBuilder.DropTable(
                 name: "Photos");

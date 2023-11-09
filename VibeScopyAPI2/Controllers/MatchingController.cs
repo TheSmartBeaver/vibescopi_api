@@ -45,7 +45,6 @@ namespace VibeScopyAPI.Controllers
             //TODO: Problème avec les distances...
             //var distanceInDegrees = potentialMatcheCriterias.Distance / 111.32; // Approximate conversion from km to degrees
             var distanceInDegrees = (potentialMatcheCriterias.Distance + 1) * 9 * 111.32; // Approximate conversion from km to degrees
-            //var userLocation = new Point(new Coordinate(userProfile.LastLocation.X, userProfile.LastLocation.Y)) { SRID = 4326 };
             List<ProfileProposition> nearbyUsers = _context.ProfilePropositions
                 .Where(nearbyUser =>
                  nearbyUser.LastLocation.IsWithinDistance(userProfile.LastLocation, distanceInDegrees))
@@ -60,19 +59,8 @@ namespace VibeScopyAPI.Controllers
 
             foreach (var toto in nearbyUsers)
             {
-                if (userProfile.LastLocation.SRID != 4326 || toto.LastLocation.SRID != 4326)
-                {
-                    throw new ArgumentException("Les points doivent avoir un SRID de 4326.");
-                }
-
-                // Calculez la distance en degrés
-                double distanceDegrees = userProfile.LastLocation.Distance(toto.LastLocation);
-
-                // Convertissez la distance en degrés en distance en kilomètres.
-                // Une approximation commune est d'utiliser 111.32 km comme la distance représentée par 1 degré.
-                double distanceKm = distanceDegrees * 111.32 * 0.75;
                 var ooo = _mapper.Map<PotentialMatchDto>(toto);
-                ooo.Distance = distanceKm;
+                ooo.Distance = CalculateDistance(userProfile.LastLocation,toto.LastLocation);
                 result.Add(ooo);
             }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using AutoMapper;
+using NetTopologySuite.Geometries;
 using VibeScopyAPI.Controllers;
 using VibeScopyAPI.Dto;
 using VibeScopyAPI.Models;
@@ -9,6 +10,8 @@ namespace VibeScopyAPI2.Converters
 {
     internal class MappingProfiles : AutoMapper.Profile
     {
+        static GeometryFactory geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+
         public MappingProfiles()
         {
             CreateAllMaps();
@@ -17,9 +20,9 @@ namespace VibeScopyAPI2.Converters
         private void CreateAllMaps()
         {
             CreateMap<AnswerQuestionDto, Answer>();
-
-            CreateMap<Activity, ActityDto>();
-            CreateMap<ActivityCreateDto, Activity>();
+            CreateMap<LaunchedActivity, ActivityDto>();
+            CreateMap<ActivityCreateDto, LaunchedActivity>()
+                .ForMember(dest => dest.Localisation, opt => opt.MapFrom(x => geometryFactory.CreatePoint(new Coordinate(x.Longitude, x.Lattitude))));
             CreateMap<CreateUserDto, UserProfile>();
             CreateMap<CreateUserDto, UserPreferences>();
             CreateMap<CreateUserDto, ProfileProposition>()

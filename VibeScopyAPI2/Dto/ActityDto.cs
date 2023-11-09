@@ -2,11 +2,13 @@
 
 namespace VibeScopyAPI.Dto
 {
-	public class ActityDto
+	public class ActivityDto
 	{
         public string Name { get; set; }
 
         public ActivityCategory ActivityCategory { get; set; }
+
+        public double Distance { get; set; }
     }
 }
 

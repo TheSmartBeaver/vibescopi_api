@@ -6,6 +6,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using VibeScopyAPI.Models;
+using NetTopologySuite.Geometries;
 
 namespace VibeScopyAPI.Controllers
 {
@@ -83,6 +85,21 @@ namespace VibeScopyAPI.Controllers
                 throw ex;
             }
 
+        }
+
+        protected double CalculateDistance(Point a, Point b)
+        {
+            if (a.SRID != 4326 || b.SRID != 4326)
+            {
+                throw new ArgumentException("Les points doivent avoir un SRID de 4326.");
+            }
+
+            double distanceDegrees = a.Distance(b);
+
+            // Convertissez la distance en degrés en distance en kilomètres.
+            // Une approximation commune est d'utiliser 111.32 km comme la distance représentée par 1 degré.
+            double distanceKm = distanceDegrees * 111.32 * 0.75;
+            return distanceKm;
         }
     }
 }

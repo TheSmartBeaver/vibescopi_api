@@ -21,6 +21,8 @@ namespace VibeScopyAPI.Infrastructure
 
         public DbSet<Activity> Activities { get; set; } = default!;
 
+        public DbSet<LaunchedActivity> LaunchedActivities { get; set; } = default!;
+
         public DbSet<UserPreferences> UserPreferences { get; set; } = default!;
 
         public DbSet<Photo> Photos { get; set; } = default!;
@@ -42,6 +44,7 @@ namespace VibeScopyAPI.Infrastructure
             modelBuilder.CreateEnumMapping<UserPreferences, Gender>(up => up.FriendGenders);
             modelBuilder.CreateEnumMapping<UserPreferences, Gender>(up => up.LovingGenders);
             modelBuilder.CreateEnumMapping<UserPreferences, RelationShip>(up => up.LookingRelationShips);
+            modelBuilder.CreateEnumMapping<LaunchedActivity, Gender>(up => up.Gender);
 
             modelBuilder.Entity<UserProfile>()
                 .HasMany(e => e.Photos)
@@ -49,12 +52,12 @@ namespace VibeScopyAPI.Infrastructure
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserLikeProfile>()
-            .HasKey(ul => new { ul.UserProfileId, ul.LikedPersonId });
+                .HasKey(ul => new { ul.UserProfileId, ul.LikedPersonId });
 
             modelBuilder.Entity<UserLikeProfile>()
-            .HasOne(ul => ul.UserProfile)        // Une clé étrangère vers UserProfile
-            .WithMany()
-            .HasForeignKey(ul => ul.UserProfileId);
+                .HasOne(ul => ul.UserProfile)        // Une clé étrangère vers UserProfile
+                .WithMany()
+                .HasForeignKey(ul => ul.UserProfileId);
 
             modelBuilder.Entity<UserLikeProfile>()
                 .HasOne(ul => ul.LikedPerson)        // Une clé étrangère vers UserProfile
@@ -66,6 +69,13 @@ namespace VibeScopyAPI.Infrastructure
                 .WithOne(ul => ul.UserProfile)
                 .HasForeignKey(ul => ul.UserProfileId);
 
+            modelBuilder.Entity<Activity>()
+                .HasMany(ul => ul.SubActivities)
+                .WithOne();
+
+            modelBuilder.Entity<LaunchedActivity>()
+                .HasOne(x => x.Creator)
+                .WithMany();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

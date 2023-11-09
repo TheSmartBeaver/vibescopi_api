@@ -43,6 +43,7 @@
     <None Remove="Converters\" />
     <None Remove="Migrations\" />
     <None Remove="Hubs\" />
+    <None Remove="Populates\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Infrastructure\" />
@@ -52,6 +53,7 @@
     <Folder Include="Converters\" />
     <Folder Include="Migrations\" />
     <Folder Include="Hubs\" />
+    <Folder Include="Populates\" />
   </ItemGroup>
   <ItemGroup>
     <Content Condition="'$(ExcludeConfigFilesFromBuildOutput)'!='true'" Update="Properties\launchSettings.json">

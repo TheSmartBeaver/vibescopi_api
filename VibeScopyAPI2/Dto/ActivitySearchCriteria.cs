@@ -7,7 +7,9 @@ namespace VibeScopyAPI.Dto
 	{
         public string Name { get; set; }
 
-        public ActivityCategory ActivityType { get; set; }
+        public ActivityCategory? ActivityType { get; set; }
+
+        public int Distance { get; set; }
     }
 }
 

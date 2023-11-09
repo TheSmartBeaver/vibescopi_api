@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using VibeScopyAPI.Infrastructure;
 namespace VibeScopyAPI.Migrations
 {
     [DbContext(typeof(VibeScopUnitOfWork))]
-    partial class VibeScopUnitOfWorkModelSnapshot : ModelSnapshot
+    [Migration("20231027183815_AcessConditionsNullable")]
+    partial class AcessConditionsNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,7 +143,8 @@ namespace VibeScopyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatorAuthentUid");
+                    b.HasIndex("CreatorAuthentUid")
+                        .IsUnique();
 
                     b.ToTable("LaunchedActivities");
                 });
@@ -376,8 +379,8 @@ namespace VibeScopyAPI.Migrations
             modelBuilder.Entity("VibeScopyAPI.Models.LaunchedActivity", b =>
                 {
                     b.HasOne("VibeScopyAPI.Models.UserProfile", "Creator")
-                        .WithMany()
-                        .HasForeignKey("CreatorAuthentUid")
+                        .WithOne()
+                        .HasForeignKey("VibeScopyAPI.Models.LaunchedActivity", "CreatorAuthentUid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

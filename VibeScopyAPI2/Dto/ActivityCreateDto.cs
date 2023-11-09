@@ -7,7 +7,7 @@ namespace VibeScopyAPI.Dto
 	{
 		public string Name { get; set; }
 
-        public ActivityCategory ActivityCategory { get; set; }
+        public Guid ActivityId { get; set; }
 
 		public int? MaxParticipants { get; set; }
 
@@ -21,9 +21,9 @@ namespace VibeScopyAPI.Dto
 
 		public ICollection<Gender> Gender { get; set; }
 
-		public double lattitude { get; set; }
+		public double Lattitude { get; set; }
 
-        public double longitude { get; set; }
+        public double Longitude { get; set; }
 
 		public LevelRequired LevelRequired { get; set; }
 

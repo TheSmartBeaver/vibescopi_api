@@ -13,7 +13,7 @@ using VibeScopyAPI.Infrastructure;
 namespace VibeScopyAPI.Migrations
 {
     [DbContext(typeof(VibeScopUnitOfWork))]
-    [Migration("20231019081132_InitialCreate")]
+    [Migration("20231027182649_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,18 +28,15 @@ namespace VibeScopyAPI.Migrations
 
             modelBuilder.Entity("VibeScopyAPI.Models.Activity", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
                     b.Property<int>("ActivityCategory")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int?>("ActivityCategory1")
+                        .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("ActivityCategory");
+
+                    b.HasIndex("ActivityCategory1");
 
                     b.ToTable("Activities");
                 });
@@ -98,6 +95,59 @@ namespace VibeScopyAPI.Migrations
                     b.HasIndex("QuestionFilamentId");
 
                     b.ToTable("AnswersFilaments");
+                });
+
+            modelBuilder.Entity("VibeScopyAPI.Models.LaunchedActivity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AccessConditions")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ActivityCategory")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CreatorAuthentUid")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("LevelRequired")
+                        .HasColumnType("integer");
+
+                    b.Property<Point>("Localisation")
+                        .HasColumnType("geometry");
+
+                    b.Property<short?>("MaxAge")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("MaxParticipants")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("MinAge")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("MinParticipants")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorAuthentUid")
+                        .IsUnique();
+
+                    b.ToTable("LaunchedActivities");
                 });
 
             modelBuilder.Entity("VibeScopyAPI.Models.Photo", b =>
@@ -290,6 +340,13 @@ namespace VibeScopyAPI.Migrations
                     b.ToTable("SwipedUser");
                 });
 
+            modelBuilder.Entity("VibeScopyAPI.Models.Activity", b =>
+                {
+                    b.HasOne("VibeScopyAPI.Models.Activity", null)
+                        .WithMany("SubActivities")
+                        .HasForeignKey("ActivityCategory1");
+                });
+
             modelBuilder.Entity("VibeScopyAPI.Models.Answer", b =>
                 {
                     b.HasOne("VibeScopyAPI.Models.AnswersFilament", null)
@@ -318,6 +375,17 @@ namespace VibeScopyAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("QuestionFilament");
+                });
+
+            modelBuilder.Entity("VibeScopyAPI.Models.LaunchedActivity", b =>
+                {
+                    b.HasOne("VibeScopyAPI.Models.UserProfile", "Creator")
+                        .WithOne()
+                        .HasForeignKey("VibeScopyAPI.Models.LaunchedActivity", "CreatorAuthentUid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("VibeScopyAPI.Models.Photo", b =>
@@ -375,6 +443,11 @@ namespace VibeScopyAPI.Migrations
                         .HasForeignKey("ProfileAuthentUid");
 
                     b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("VibeScopyAPI.Models.Activity", b =>
+                {
+                    b.Navigation("SubActivities");
                 });
 
             modelBuilder.Entity("VibeScopyAPI.Models.AnswersFilament", b =>

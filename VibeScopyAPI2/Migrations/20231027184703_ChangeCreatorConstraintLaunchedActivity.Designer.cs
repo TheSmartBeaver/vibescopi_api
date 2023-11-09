@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using VibeScopyAPI.Infrastructure;
 namespace VibeScopyAPI.Migrations
 {
     [DbContext(typeof(VibeScopUnitOfWork))]
-    partial class VibeScopUnitOfWorkModelSnapshot : ModelSnapshot
+    [Migration("20231027184703_ChangeCreatorConstraintLaunchedActivity")]
+    partial class ChangeCreatorConstraintLaunchedActivity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

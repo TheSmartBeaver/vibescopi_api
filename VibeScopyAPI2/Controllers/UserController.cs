@@ -180,10 +180,9 @@ namespace VibeScopyAPI.Controllers
             var fbUid = await GetAuthenticateUserAsync();
 
             ProfileProposition user = await _context.ProfilePropositions.Include(x => x.User).SingleAsync(x => x.User.AuthentUid == fbUid);
-            //user.LastLocation = new Point(new Coordinate(updateUserDto.Latitude, updateUserDto.Longitude)) { SRID = 4326 };
 
             var geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-            var currentLocation = geometryFactory.CreatePoint(new NetTopologySuite.Geometries.Coordinate(updateUserDto.Longitude, updateUserDto.Latitude));
+            var currentLocation = geometryFactory.CreatePoint(new Coordinate(updateUserDto.Longitude, updateUserDto.Latitude));
             user.LastLocation = currentLocation;
 
             await _context.SaveChangesAsync();
