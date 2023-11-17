@@ -20,7 +20,9 @@ namespace VibeScopyAPI2.Converters
         private void CreateAllMaps()
         {
             CreateMap<AnswerQuestionDto, Answer>();
-            CreateMap<LaunchedActivity, ActivityDto>();
+            CreateMap<LaunchedActivity, ActivityDto>()
+                .ForMember(dest => dest.Longitude, opt => opt.MapFrom(x => x.Localisation != null ? (double?)x.Localisation.X : null))
+                .ForMember(dest => dest.Latitude, opt => opt.MapFrom(x => x.Localisation != null ? (double?)x.Localisation.Y : null));
             CreateMap<ActivityCreateDto, LaunchedActivity>()
                 .ForMember(dest => dest.Localisation, opt => opt.MapFrom(x => geometryFactory.CreatePoint(new Coordinate(x.Longitude, x.Lattitude))));
             CreateMap<CreateUserDto, UserProfile>();

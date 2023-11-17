@@ -65,7 +65,9 @@ namespace VibeScopyAPI2.Controllers
 
             var distanceInDegrees = (criterias.Distance + 1) * 9 * 111.32; // Approximate conversion from km to degrees
 
-            var activitiesRequest = _context.LaunchedActivities.Where(x => x.EventDate > DateTime.Now.ToUniversalTime());
+            var activitiesRequest = _context.LaunchedActivities
+                .Include(x => x.Participants)
+                .Where(x => x.EventDate > DateTime.Now.ToUniversalTime());
 
             void AttachLocationRequest()
             {

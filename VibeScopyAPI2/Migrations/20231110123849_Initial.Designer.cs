@@ -13,8 +13,8 @@ using VibeScopyAPI.Infrastructure;
 namespace VibeScopyAPI.Migrations
 {
     [DbContext(typeof(VibeScopUnitOfWork))]
-    [Migration("20231027182649_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20231110123849_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -104,7 +104,6 @@ namespace VibeScopyAPI.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("AccessConditions")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("ActivityCategory")
@@ -144,8 +143,7 @@ namespace VibeScopyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatorAuthentUid")
-                        .IsUnique();
+                    b.HasIndex("CreatorAuthentUid");
 
                     b.ToTable("LaunchedActivities");
                 });
@@ -259,6 +257,9 @@ namespace VibeScopyAPI.Migrations
                     b.Property<string>("Langages")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("LaunchedActivityId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -276,6 +277,8 @@ namespace VibeScopyAPI.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("LaunchedActivityId");
 
                     b.ToTable("Profiles");
                 });
@@ -380,8 +383,8 @@ namespace VibeScopyAPI.Migrations
             modelBuilder.Entity("VibeScopyAPI.Models.LaunchedActivity", b =>
                 {
                     b.HasOne("VibeScopyAPI.Models.UserProfile", "Creator")
-                        .WithOne()
-                        .HasForeignKey("VibeScopyAPI.Models.LaunchedActivity", "CreatorAuthentUid")
+                        .WithMany()
+                        .HasForeignKey("CreatorAuthentUid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -429,6 +432,13 @@ namespace VibeScopyAPI.Migrations
                     b.Navigation("UserProfile");
                 });
 
+            modelBuilder.Entity("VibeScopyAPI.Models.UserProfile", b =>
+                {
+                    b.HasOne("VibeScopyAPI.Models.LaunchedActivity", null)
+                        .WithMany("Participants")
+                        .HasForeignKey("LaunchedActivityId");
+                });
+
             modelBuilder.Entity("VibeScopyAPI2.Models.PossibleAnswer", b =>
                 {
                     b.HasOne("VibeScopyAPI2.Models.QuestionFilament", null)
@@ -453,6 +463,11 @@ namespace VibeScopyAPI.Migrations
             modelBuilder.Entity("VibeScopyAPI.Models.AnswersFilament", b =>
                 {
                     b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("VibeScopyAPI.Models.LaunchedActivity", b =>
+                {
+                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("VibeScopyAPI.Models.ProfileProposition", b =>

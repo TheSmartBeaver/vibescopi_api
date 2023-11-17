@@ -35,6 +35,8 @@ namespace VibeScopyAPI.Models
         public LevelRequired? LevelRequired { get; set; }
         
         public DateTime EventDate { get; set; } // Pour la périodicité, il faudra renouveler manuellement sur l'appli
+
+        public ICollection<UserProfile> Participants { get; set; } = default!;
     }
 }
 

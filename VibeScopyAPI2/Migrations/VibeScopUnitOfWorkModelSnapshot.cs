@@ -255,6 +255,9 @@ namespace VibeScopyAPI.Migrations
                     b.Property<string>("Langages")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("LaunchedActivityId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -272,6 +275,8 @@ namespace VibeScopyAPI.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("LaunchedActivityId");
 
                     b.ToTable("Profiles");
                 });
@@ -425,6 +430,13 @@ namespace VibeScopyAPI.Migrations
                     b.Navigation("UserProfile");
                 });
 
+            modelBuilder.Entity("VibeScopyAPI.Models.UserProfile", b =>
+                {
+                    b.HasOne("VibeScopyAPI.Models.LaunchedActivity", null)
+                        .WithMany("Participants")
+                        .HasForeignKey("LaunchedActivityId");
+                });
+
             modelBuilder.Entity("VibeScopyAPI2.Models.PossibleAnswer", b =>
                 {
                     b.HasOne("VibeScopyAPI2.Models.QuestionFilament", null)
@@ -449,6 +461,11 @@ namespace VibeScopyAPI.Migrations
             modelBuilder.Entity("VibeScopyAPI.Models.AnswersFilament", b =>
                 {
                     b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("VibeScopyAPI.Models.LaunchedActivity", b =>
+                {
+                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("VibeScopyAPI.Models.ProfileProposition", b =>

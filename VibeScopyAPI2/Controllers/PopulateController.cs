@@ -38,7 +38,7 @@ namespace VibeScopyAPI2.Controllers
         [HttpPost("populate")]
         public async Task<ActionResult> Populate()
         {
-            //await PopulateUsersAsync();
+            await PopulateUsersAsync();
             await PopulateActivities();
 
             return Ok();
@@ -68,9 +68,9 @@ namespace VibeScopyAPI2.Controllers
 
         private async Task PopulateActivities()
         {
-            //_context.AddRange(ActivitiesPopulation.Activities);
+            _context.AddRange(ActivitiesPopulation.Activities);
 
-            //await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             Dictionary<ActivityCategory, Activity> activities = new Dictionary<ActivityCategory, Activity>();
 
@@ -89,7 +89,11 @@ namespace VibeScopyAPI2.Controllers
             }
 
             _context.AddRange(ActivitiesPopulation.LaunchedActivities);
+            await _context.SaveChangesAsync();
 
+            var launchedActivity = await _context.LaunchedActivities.SingleAsync(x => x.Name == "Tennis avec le castor");
+            UserProfile participant = await _context.Profiles.SingleAsync(x => x.AuthentUid == "UhNAi3wdSQgHJcPNLaP5E09YaiW2");
+            launchedActivity.Participants = new List<UserProfile>(){ participant };
             await _context.SaveChangesAsync();
         }
     }
